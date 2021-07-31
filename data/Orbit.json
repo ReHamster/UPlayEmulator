@@ -1,0 +1,20 @@
+{
+  "Orbit": {
+    "Profile": {
+      "AccountId": "",
+      "Username": "JosephSeed",
+      "Password": "123456"
+    },
+    "Logging": {
+      "Write": true,
+      "Path": "Orbit.log"
+    },
+    "Saves": {
+      "Path": "V:\\Games\\Assassin's Creed 3\\Saves",
+      "Backup": {
+        "Active": true,
+        "Path": "V:\\Games\\Assassin's Creed 3\\Saves\\Backup"
+      }
+    }
+  }
+}
