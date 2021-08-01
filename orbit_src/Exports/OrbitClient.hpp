@@ -37,7 +37,7 @@ namespace mg::orbitclient
 		typedef shared_ptr<vector<SavegameInfo *>> SharedSavegameList;
 
 		atomic_int RequestId = {0};
-		std::map<int, IGetLoginDetailsListener*> m_loginCallbacks;
+		//std::map<int, IGetLoginDetailsListener*> m_loginCallbacks;
 
 		void InitSavegameList();
 		void ClearSavegameList();
@@ -199,8 +199,8 @@ inline int StringToWString(std::wstring& ws, const std::string& s)
 //------------------------------------------------------------------------------
 inline void mg::orbitclient::OrbitClient::Update()
 {
-	LOGD << "__CALL__ Update";
-
+	// LOGD << "__CALL__ Update";
+#if 0
 	for (auto cb : m_loginCallbacks)
 	{
 		const auto callBack = reinterpret_cast<IGetLoginDetailsListener::CallBackPtrType>(**cb.second->CallBackPtr);
@@ -225,9 +225,7 @@ inline void mg::orbitclient::OrbitClient::Update()
 		callBack(cb.second, cb.first, accountId, passwordWstr.c_str(), gamekey);
 	}
 	m_loginCallbacks.clear();
-
-
-
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -311,7 +309,28 @@ inline void mg::orbitclient::OrbitClient::GetLoginDetails(unsigned int requestId
 	LOGD << fmt::format("RequestId: {} LoginDetailsListenerCallBack: {}", requestId,
 						reinterpret_cast<void *>(&loginDetailsListenerCallBack));
 
-	m_loginCallbacks[requestId] = loginDetailsListenerCallBack;
+	// m_loginCallbacks[requestId] = loginDetailsListenerCallBack;
+
+	const auto callBack = reinterpret_cast<IGetLoginDetailsListener::CallBackPtrType>(**loginDetailsListenerCallBack->CallBackPtr);
+
+	if (callBack == nullptr)
+	{
+		return;
+	}
+
+	const auto& profile = Singleton<OrbitConfig>::Instance()
+		.Get()
+		.Orbit
+		.Profile;
+
+	const auto accountId = profile.AccountId.c_str();
+	const auto password = profile.Password.c_str();
+	const auto gamekey = profile.GameKey.c_str();
+
+	std::wstring passwordWstr;
+	StringToWString(passwordWstr, password);
+
+	callBack(loginDetailsListenerCallBack, requestId, accountId, passwordWstr.c_str(), gamekey);
 	
 }
 
